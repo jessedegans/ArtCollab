@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Image Gallery</title>
+  <style>
+    .image-container {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .image-item {
+      width: 200px;
+      margin: 10px;
+    }
+    .image-item img {
+      width: 100%;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>Image Gallery</h1>
+  <div class="image-container"></div>
+
+  <script>
+    // Function to fetch the list of images from the "images" directory
+    function fetchImageList() {
+      const url = "https://api.github.com/repos/jessedegans/artcolab/contents/images";
+      fetch(url)
+        .then(response => response.json())
+        .then(data => displayImages(data))
+        .catch(error => console.error(error));
+    }
+
+    // Function to display the images in the gallery
+    function displayImages(images) {
+      const container = document.querySelector('.image-container');
+      images.forEach(image => {
+        const imageUrl = image.download_url;
+        const imageItem = document.createElement('div');
+        imageItem.classList.add('image-item');
+        const img = document.createElement('img');
+        img.src = imageUrl;
+        imageItem.appendChild(img);
+        container.appendChild(imageItem);
+      });
+    }
+
+    // Call the fetchImageList function when the page loads
+    window.onload = fetchImageList;
+  </script>
+</body>
+</html>
