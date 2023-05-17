@@ -13,8 +13,9 @@
     }
 
     .image-item {
+      position: relative;
       width: 200px;
-      margin: auto;
+      margin: 10px;
     }
 
     .image-item img {
@@ -24,10 +25,30 @@
 
     .image-item .image-info {
       margin-top: 5px;
-      font-size: 14px; 
+      font-size: 14px;
       text-align: center;
       max-width: 180px;
       overflow-wrap: break-word;
+    }
+
+    .image-item .contribution-label {
+      position: absolute;
+      top: -8px;
+      right: 0;
+      padding: 4px 8px;
+      background-color: #f44336;
+      color: #fff;
+      font-size: 12px;
+    }
+
+    .image-item .contribution-line {
+      position: absolute;
+      top: calc(50% - 1px);
+      right: 20px;
+      height: 2px;
+      background-color: #f44336;
+      pointer-events: none;
+      z-index: -1;
     }
   </style>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap">
@@ -48,8 +69,11 @@
     }
 
     // Function to display the images in the gallery
+    // Function to display the images in the gallery
     function displayImages(images) {
       const container = document.querySelector('.image-container');
+      const imageItems = [];
+
       images.forEach(image => {
         const imageUrl = image.download_url;
         const imageItem = document.createElement('div');
@@ -65,8 +89,23 @@
         imageInfo.innerHTML = `Contract Address: ${contractAddress}<br>ID: ${id}`;
         imageItem.appendChild(imageInfo);
 
+        imageItems[id] = imageItem;
         container.appendChild(imageItem);
       });
+
+      // Connect contributions with a line
+      for (let i = 2; i < imageItems.length; i++) {
+        const imageItem = imageItems[i];
+        const contributionLine = document.createElement('div');
+        contributionLine.classList.add('contribution-line');
+        imageItem.appendChild(contributionLine);
+
+        const previousImageItem = imageItems[i - 1];
+        const contributionLabel = document.createElement('div');
+        contributionLabel.classList.add('contribution-label');
+        contributionLabel.textContent = 'Contribution';
+        previousImageItem.appendChild(contributionLabel);
+      }
     }
 
     // Call the fetchImageList function when the page loads
