@@ -3,7 +3,7 @@
 <head>
   <title>Image Gallery</title>
   <style>
-    body {
+       body {
       font-family: 'Roboto Mono', monospace;
     }
 
@@ -30,26 +30,25 @@
       max-width: 180px;
       overflow-wrap: break-word;
     }
+    .contribution-line {
+  position: absolute;
+  left: -20px;
+  width: 20px;
+  height: 5px;
+  background-color: rgb(85, 199, 70);
+  pointer-events: none;
+  z-index: 1;
+}
 
-    .image-item .contribution-label {
-      position: absolute;
-      top: -8px;
-      right: 0;
-      padding: 4px 8px;
-      background-color: #f44336;
-      color: #fff;
-      font-size: 12px;
-    }
-
-    .image-item .contribution-line {
-      position: absolute;
-      top: calc(50% - 1px);
-      right: 20px;
-      height: 2px;
-      background-color: #f44336;
-      pointer-events: none;
-      z-index: -1;
-    }
+.contribution-line::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  right: -1px;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-left: 10px solid rgb(85, 199, 70);
+}
   </style>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap">
 </head>
@@ -57,6 +56,7 @@
   <h1>ArtCollab Gallery</h1>
   <p>Enable collab mode and submit contract address and ID to load image in the AI to start altering and adding your own contributions</p>
   <div class="image-container"></div>
+
 
   <script>
     // Function to fetch the list of images from the "images" directory
@@ -69,43 +69,64 @@
     }
 
     // Function to display the images in the gallery
-    // Function to display the images in the gallery
     function displayImages(images) {
       const container = document.querySelector('.image-container');
-      const imageItems = [];
+      const imageItems = {};
 
-      images.forEach(image => {
-        const imageUrl = image.download_url;
-        const imageItem = document.createElement('div');
-        imageItem.classList.add('image-item');
-        const img = document.createElement('img');
-        img.src = imageUrl;
-        imageItem.appendChild(img);
+      // Sort images based on contract address
+        images.sort((a, b) => {
+            const aName = a.name.split('.')[0];
+            const bName = b.name.split('.')[0];
+            const [, aContractAddress, aId] = aName.split(':');
+            const [, bContractAddress, bId] = bName.split(':');
+            
+            if (aContractAddress !== bContractAddress) {
+                return aContractAddress.localeCompare(bContractAddress);
+            } else {
+                return parseInt(aId) - parseInt(bId);
+            }
+        });
 
-        const imageInfo = document.createElement('div');
-        imageInfo.classList.add('image-info');
-        const imageName = image.name.split('.')[0];
-        const [acid, contractAddress, id] = imageName.split(':');
-        imageInfo.innerHTML = `Contract Address: ${contractAddress}<br>ID: ${id}`;
-        imageItem.appendChild(imageInfo);
+        images.forEach((image, index) => {
+            const imageUrl = image.download_url;
+            const imageItem = document.createElement('div');
+            imageItem.classList.add('image-item');
+            const img = document.createElement('img');
+            img.src = imageUrl;
+            imageItem.appendChild(img);
 
-        imageItems[id] = imageItem;
-        container.appendChild(imageItem);
-      });
+            const imageInfo = document.createElement('div');
+            imageInfo.classList.add('image-info');
+            const imageName = image.name.split('.')[0];
+            const [acid, contractAddress, id] = imageName.split(':');
+            imageInfo.innerHTML = `Contract Address: ${contractAddress}<br>ID: ${id}`;
+            imageItem.appendChild(imageInfo);
 
-      // Connect contributions with a line
-      for (let i = 2; i < imageItems.length; i++) {
-        const imageItem = imageItems[i];
-        const contributionLine = document.createElement('div');
-        contributionLine.classList.add('contribution-line');
-        imageItem.appendChild(contributionLine);
+            imageItems[contractAddress] = imageItems[contractAddress] || [];
+            imageItems[contractAddress].push({
+                imageItem,
+                index
+            });
+            container.appendChild(imageItem);
+        });
 
-        const previousImageItem = imageItems[i - 1];
-        const contributionLabel = document.createElement('div');
-        contributionLabel.classList.add('contribution-label');
-        contributionLabel.textContent = 'Contribution';
-        previousImageItem.appendChild(contributionLabel);
-      }
+        // Draw lines between artworks with the same contract address
+        Object.values(imageItems).forEach(images => {
+            if (images.length > 1) {
+                for (let i = 1; i < images.length; i++) {
+                const currentImage = images[i].imageItem;
+                const previousImage = images[i - 1].imageItem;
+
+                const contributionLine = document.createElement('div');
+                contributionLine.classList.add('contribution-line');
+                const lineTop = Math.abs(currentImage.offsetHeight/2);
+                console.log(currentImage.height)
+                console.log(lineTop);
+                contributionLine.style.top = `${lineTop}px`;
+                currentImage.appendChild(contributionLine);
+                }
+            }
+        });
     }
 
     // Call the fetchImageList function when the page loads
