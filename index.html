@@ -24,7 +24,7 @@
   <script>
     // Function to fetch the list of images from the "images" directory
     function fetchImageList() {
-      const url = "https://api.github.com/repos/jessedegans/artcolab/contents/images";
+      const url = "https://api.github.com/repos/jessedegans/ArtCollab/images";
       fetch(url)
         .then(response => response.json())
         .then(data => displayImages(data))
