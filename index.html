@@ -3,22 +3,36 @@
 <head>
   <title>Image Gallery</title>
   <style>
+    body {
+      font-family: 'Roboto Mono', monospace;
+    }
+
     .image-container {
       display: flex;
       flex-wrap: wrap;
     }
+
     .image-item {
       width: 200px;
       margin: 10px;
     }
+
     .image-item img {
       width: 100%;
       height: auto;
     }
+
+    .image-item .image-info {
+      margin-top: 5px;
+      font-size: 14px;
+      text-align: center;
+    }
   </style>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap">
 </head>
 <body>
-  <h1>Image Gallery</h1>
+  <h1>ArtCollab Gallery</h1>
+  <p>Enable collab mode and submit contract address and ID to load image in the AI to start altering and adding your own contributions</p>
   <div class="image-container"></div>
 
   <script>
@@ -41,6 +55,14 @@
         const img = document.createElement('img');
         img.src = imageUrl;
         imageItem.appendChild(img);
+
+        const imageInfo = document.createElement('div');
+        imageInfo.classList.add('image-info');
+        const imageName = image.name.split('.')[0];
+        const [acid, contractAddress, id] = imageName.split(':');
+        imageInfo.innerHTML = `Contract Address: ${contractAddress}<br>ID: ${id}`;
+        imageItem.appendChild(imageInfo);
+
         container.appendChild(imageItem);
       });
     }
