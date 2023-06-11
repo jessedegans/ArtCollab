@@ -99,7 +99,7 @@
             imageInfo.classList.add('image-info');
             const imageName = image.name.split('.')[0];
             const [acid, contractAddress, id] = imageName.split(':');
-            imageInfo.innerHTML = `Contract Address: ${contractAddress}<br>ID: ${id}`;
+            imageInfo.innerHTML = `<b>Contract Address:</b> ${contractAddress}<br><b>ID:</b> ${id}`;
             imageItem.appendChild(imageInfo);
 
             imageItems[contractAddress] = imageItems[contractAddress] || [];
